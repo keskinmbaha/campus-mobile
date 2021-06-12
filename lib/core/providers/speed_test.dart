@@ -221,9 +221,8 @@ class SpeedTestProvider extends ChangeNotifier {
   }
 
   Future<void> sendLogs(Map log) async {
-    mobileLoggerApi =
-        "https://api-qa.ucsd.edu:8243/mobileapplogger/v1.1.0/log" +
-            "?type=WIFI";
+    final mobileLoggerApiWifi = mobileLoggerApi + "?type=WIFI";
+
     offloadDataHeader = {
       'Authorization':
           'Bearer ${_userDataProvider?.authenticationModel?.accessToken}'
@@ -238,8 +237,8 @@ class SpeedTestProvider extends ChangeNotifier {
       // Send to offload API
       try {
         var response = _networkHelper
-            .authorizedPost(
-                mobileLoggerApi, offloadDataHeader, json.encode(log.toString()))
+            .authorizedPost(mobileLoggerApiWifi, offloadDataHeader,
+                json.encode(log.toString()))
             .then((value) {
           return value;
         });
@@ -250,29 +249,27 @@ class SpeedTestProvider extends ChangeNotifier {
             'Authorization':
                 'Bearer ${_userDataProvider?.authenticationModel?.accessToken}'
           };
-          _networkHelper.authorizedPost(
-              mobileLoggerApi, offloadDataHeader, json.encode(log.toString()));
+          _networkHelper.authorizedPost(mobileLoggerApiWifi, offloadDataHeader,
+              json.encode(log.toString()));
         }
       }
     } else {
       try {
         getNewToken().then((value) {
           _networkHelper.authorizedPost(
-              mobileLoggerApi, headers, json.encode(log.toString()));
+              mobileLoggerApiWifi, headers, json.encode(log.toString()));
         });
       } catch (Exception) {
         getNewToken().then((value) {
           _networkHelper.authorizedPost(
-              mobileLoggerApi, headers, json.encode(log.toString()));
+              mobileLoggerApiWifi, headers, json.encode(log.toString()));
         });
       }
     }
   }
 
   Future<void> reportIssue() async {
-    mobileLoggerApi =
-        "https://api-qa.ucsd.edu:8243/mobileapplogger/v1.1.0/log" +
-            "?type=WIFIREPORT";
+    final mobileLoggerApiWifiReport = mobileLoggerApi + "?type=WIFIREPORT";
 
     offloadDataHeader = {
       'Authorization':
@@ -312,8 +309,8 @@ class SpeedTestProvider extends ChangeNotifier {
       }
       // Send to offload API
       try {
-        _networkHelper.authorizedPost(mobileLoggerApi, offloadDataHeader,
-            json.encode(wiFiLog.toString()));
+        _networkHelper.authorizedPost(mobileLoggerApiWifiReport,
+            offloadDataHeader, json.encode(wiFiLog.toString()));
       } catch (Exception) {
         if (Exception.toString().contains(ErrorConstants.invalidBearerToken)) {
           _userDataProvider.silentLogin();
@@ -321,20 +318,22 @@ class SpeedTestProvider extends ChangeNotifier {
             'Authorization':
                 'Bearer ${_userDataProvider?.authenticationModel?.accessToken}'
           };
-          _networkHelper.authorizedPost(mobileLoggerApi, offloadDataHeader,
-              json.encode(wiFiLog.toString()));
+          _networkHelper.authorizedPost(mobileLoggerApiWifiReport,
+              offloadDataHeader, json.encode(wiFiLog.toString()));
         }
       }
     } else {
       try {
         getNewToken().then((value) {
-          _networkHelper.authorizedPost(
-              mobileLoggerApi, headers, json.encode(wiFiLog.toString()));
+          _networkHelper.authorizedPost(mobileLoggerApiWifiReport, headers,
+              json.encode(wiFiLog.toString()));
         });
       } catch (Exception) {
         getNewToken().then((value) {
           var response = _networkHelper.authorizedPost(
-              mobileLoggerApi, headers, json.encode(wiFiLog.toString()));
+              mobileLoggerApiWifiReport,
+              headers,
+              json.encode(wiFiLog.toString()));
         });
       }
     }
