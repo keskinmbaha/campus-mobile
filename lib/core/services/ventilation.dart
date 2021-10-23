@@ -35,18 +35,16 @@ class VentilationService {
       _locations = data;
       return true;
     } catch (e) {
-      /// if the authorized fetch failed we know we have to refresh the
-      /// token for this service
-      print("IN CATCH");
+      print("Error in fetchLocations() in services/ventilation.dart: \n$e");
+
+      /// if the authorized fetch failed, we have to refresh the token for this service
       if (e.toString().contains("401")) {
-        print("Getting new token from fetchLocations");
         if (await getNewToken()) {
-          print("Getting new token from fetchLocations");
           return await fetchLocations();
         }
       }
+
       _error = e.toString();
-      print(_error);
       _isLoading = false;
       return false;
     }
@@ -56,26 +54,23 @@ class VentilationService {
     _error = null;
     _isLoading = true;
     try {
-      print("Before fetching data: " + baseEndpoint + '/' + bfrID);
       String _response = await _networkHelper.authorizedFetch(
           baseEndpoint + '/' + bfrID, headers);
-      print("After fetching data: " + baseEndpoint + '/' + bfrID);
-      // String _response = await _networkHelper.fetchData(dataBaseEndpoint);
 
       /// parse data
       final data = ventilationDataModelFromJson(_response);
       _data = data;
       return true;
     } catch (e) {
-      print("ERROR in ventilation services");
-      print(e);
+      print("Error in fetchData() in services/ventilation.dart: \n$e");
+
+      /// if the authorized fetch failed, we have to refresh the token for this service
       if (e.toString().contains("401")) {
-        print("Getting new token from fetchData");
         if (await getNewToken()) {
-          print("Got new token from fetchData");
           return await fetchData(bfrID);
         }
       }
+
       _error = e.toString();
       _isLoading = false;
       return false;
@@ -97,6 +92,8 @@ class VentilationService {
 
       return true;
     } catch (e) {
+      print("Error in getNewToken() in services/ventilation.dart: \n$e");
+
       _error = e.toString();
       return false;
     }

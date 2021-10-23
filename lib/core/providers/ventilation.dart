@@ -1,10 +1,9 @@
+import 'package:campus_mobile_experimental/app_constants.dart';
 import 'package:campus_mobile_experimental/core/models/ventilation_data.dart';
 import 'package:campus_mobile_experimental/core/models/ventilation_locations.dart';
 import 'package:campus_mobile_experimental/core/providers/user.dart';
 import 'package:campus_mobile_experimental/core/services/ventilation.dart';
 import 'package:flutter/material.dart';
-
-import '../../app_constants.dart';
 
 class VentilationDataProvider extends ChangeNotifier {
   VentilationDataProvider() {
@@ -64,7 +63,6 @@ class VentilationDataProvider extends ChangeNotifier {
           _userDataProvider!.userProfileModel!.selectedVentilationLocations!;
 
       for (String? bfrID in ventilationIDs) {
-        print("ID: $bfrID");
         if (await _ventilationService.fetchData(bfrID!)) {
           tempModels.add(_ventilationService.data);
         } else {
@@ -120,7 +118,6 @@ class VentilationDataProvider extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    print("Items in Ventilation IDS");
 
     // create new list of ventilation data to display
     List<VentilationDataModel?> tempModels = [];
@@ -130,7 +127,6 @@ class VentilationDataProvider extends ChangeNotifier {
           _userDataProvider!.userProfileModel!.selectedVentilationLocations!;
 
       for (String? bfrID in ventilationIDs) {
-        print("ID: $bfrID");
         if (await _ventilationService.fetchData(bfrID!)) {
           tempModels.add(_ventilationService.data);
         } else {
@@ -175,15 +171,13 @@ class VentilationDataProvider extends ChangeNotifier {
       ventilationDataModels.add(_ventilationService.data);
       ventilationIDs =
           _userDataProvider!.userProfileModel!.selectedVentilationLocations!;
-
     } catch (e) {
+      print("Error in addLocation() in providers/ventilation.dart: \n$e");
       _error = VentilationConstants.addLocationFailed;
-      print("Error while adding location:  $e");
     }
     notifyListeners();
   }
 
-  /// MIGHT BE A GOOD IDEA TO ADD SOME SORT OF LIMIT HERE AS WELL
   Future<void> removeLocation(String? roomID) async {
     try {
       // creates the bfrID and then removes the ID to the user's list
@@ -194,16 +188,16 @@ class VentilationDataProvider extends ChangeNotifier {
           _userDataProvider!.userProfileModel!.selectedVentilationLocations!;
       _userDataProvider!.postUserProfile(_userDataProvider!.userProfileModel);
 
-      ///TODO: MIGHT BE GOOD TO HAVE SOME CATCH IN CASE THE FETCH RETURNS FALSE
       // calls ventilationService to get this bfrID's data and removes it from the list
       await _ventilationService.fetchData(bfrID);
       ventilationDataModels.remove(_ventilationService.data);
 
       notifyListeners();
     } catch (e) {
+      print("Error in removeLocation() in providers/ventilation.dart: \n$e");
+
       _error = VentilationConstants.removeLocationFailed;
       notifyListeners();
-      print("Error while removing location:  $e");
     }
   }
 

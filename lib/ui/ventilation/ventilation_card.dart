@@ -31,12 +31,9 @@ class _VentilationCardState extends State<VentilationCard> {
       active: Provider.of<CardsDataProvider>(context).cardStates![cardId],
       hide: () => Provider.of<CardsDataProvider>(context, listen: false)
           .toggleCard(cardId),
-      //null
       reload: () => _ventilationDataProvider.fetchVentilationData(),
-      //false
       isLoading: _ventilationDataProvider.isLoading,
       titleText: CardTitleConstants.titleMap[cardId],
-      //null
       errorText: _ventilationDataProvider.error,
       child: () =>
           buildCardContent(_ventilationDataProvider.ventilationDataModels),
@@ -45,9 +42,10 @@ class _VentilationCardState extends State<VentilationCard> {
   }
 
   Widget buildCardContent(List<VentilationDataModel?> models) {
-    print("Length in card: ${models.length}");
     var display;
+
     try {
+      /// get the VentilationModel and add it as a VentilationDisplay
       for (VentilationDataModel? model in models) {
         if (model != null) {
           display = VentilationDisplay(
@@ -55,6 +53,8 @@ class _VentilationCardState extends State<VentilationCard> {
           );
         }
       }
+
+      /// if the user has chosen no locations, show "no locations" display
       if (display == null) {
         return (Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,7 +74,7 @@ class _VentilationCardState extends State<VentilationCard> {
           ],
         ));
       }
-      print("About to return displays: $display");
+
       return Column(
         children: <Widget>[
           Container(
@@ -83,7 +83,8 @@ class _VentilationCardState extends State<VentilationCard> {
         ],
       );
     } catch (e) {
-      print(e);
+      print("Error in buildCardContent() in ventilation_card.dart: \n$e");
+
       return Container(
         width: double.infinity,
         child: Center(
@@ -95,8 +96,11 @@ class _VentilationCardState extends State<VentilationCard> {
     }
   }
 
+  /// builds the buttons on the office environment card
   List<Widget> buildActionButtons() {
     List<Widget> actionButtons = [];
+
+    /// creates the manage locations button
     actionButtons.add(TextButton(
       style: TextButton.styleFrom(
         primary: Theme.of(context).buttonColor,
